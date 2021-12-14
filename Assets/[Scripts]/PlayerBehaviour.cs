@@ -12,7 +12,8 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject heartTwo;
     public GameObject heartThree;
     public Text scoreText;
-
+    public GameObject endImage;
+    public Text resultText;
     [Header("Touch Input")] 
     public Joystick joystick;
     [Range(0.01f, 1.0f)]
@@ -57,6 +58,8 @@ public class PlayerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        endImage.SetActive(false);
+        Time.timeScale = 1;
         isCameraShaking = false;
         shakeTimer = shakeDuration;
 
@@ -100,7 +103,12 @@ public class PlayerBehaviour : MonoBehaviour
             heartOne.SetActive(false);
             heartTwo.SetActive(false);
             heartThree.SetActive(false);
-            SceneManager.LoadScene("GameOver");
+            //SceneManager.LoadScene("GameOver");
+            endImage.SetActive(true);
+            resultText.text = "YOU LOST!";
+            this.enabled = false;
+            GetComponent<Collider2D>().enabled = false;
+            Time.timeScale = 0;
         }
         scoreText.text = ("Score: " + Score);
 
@@ -242,9 +250,15 @@ public class PlayerBehaviour : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Finish"))
         {
-            SceneManager.LoadScene("GameOver");
+            heartOne.SetActive(false);
+            heartTwo.SetActive(false);
+            heartThree.SetActive(false);
+            //SceneManager.LoadScene("GameOver");
+            endImage.SetActive(true);
+            resultText.text = "YOU WON!";
             hitSound.Play();
             ShakeCamera();
+            Time.timeScale = 0;
         }
         if (other.gameObject.CompareTag("Pickup"))
         {
