@@ -153,7 +153,7 @@ public class PlayerBehaviour : MonoBehaviour
         // depending on direction scale across the x-axis either 1 or -1
         x = (x > 0) ? 1 : -1;
 
-        transform.localScale = new Vector3(x * 0.3f, 0.3f);
+        transform.localScale = new Vector3(x * 0.1f, 0.1f);
         return x;
     }
 
