@@ -20,7 +20,7 @@ public class GemController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SpinGem();
+        //SpinGem();
     }
 
     private void SpinGem()
