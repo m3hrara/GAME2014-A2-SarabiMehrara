@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    public GameObject heartOne;
+    public GameObject heartTwo;
+    public GameObject heartThree;
+    public Text scoreText;
+
     [Header("Touch Input")] 
     public Joystick joystick;
     [Range(0.01f, 1.0f)]
@@ -43,6 +50,9 @@ public class PlayerBehaviour : MonoBehaviour
 
     private Rigidbody2D rigidbody;
     private Animator animatorController;
+    private GameController gameController;
+    private int Lives = 3;
+    private int Score = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -52,6 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         rigidbody = GetComponent<Rigidbody2D>();
         animatorController = GetComponent<Animator>();
+        gameController = GameObject.FindObjectOfType<GameController>();
 
         // Assign Sounds
         audioSources = GetComponents<AudioSource>().ToList();
@@ -66,6 +77,33 @@ public class PlayerBehaviour : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (Lives == 3)
+        {
+            heartOne.SetActive(true);
+            heartTwo.SetActive(true);
+            heartThree.SetActive(true);
+        }
+        else if (Lives == 2)
+        {
+            heartOne.SetActive(true);
+            heartTwo.SetActive(true);
+            heartThree.SetActive(false);
+        }
+        else if (Lives == 1)
+        {
+            heartOne.SetActive(true);
+            heartTwo.SetActive(false);
+            heartThree.SetActive(false);
+        }
+        else if (Lives <= 1)
+        {
+            heartOne.SetActive(false);
+            heartTwo.SetActive(false);
+            heartThree.SetActive(false);
+            SceneManager.LoadScene("GameOver");
+        }
+        scoreText.text = ("Score: " + Score);
+
         Move();
         CheckIfGrounded();
 
@@ -153,7 +191,7 @@ public class PlayerBehaviour : MonoBehaviour
         // depending on direction scale across the x-axis either 1 or -1
         x = (x > 0) ? 1 : -1;
 
-        transform.localScale = new Vector3(x * 0.1f, 0.1f);
+        transform.localScale = new Vector3(x * 0.5f, 0.5f);
         return x;
     }
 
@@ -191,6 +229,26 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Bullet"))
         {
+            Lives--;
+            hitSound.Play();
+            ShakeCamera();
+            transform.position = gameController.currentSpawnPoint.position;
+        }
+        if (other.gameObject.CompareTag("DeathPoint"))
+        {
+            Lives--;
+            ShakeCamera();
+            transform.position = gameController.currentSpawnPoint.position;
+        }
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            SceneManager.LoadScene("GameOver");
+            hitSound.Play();
+            ShakeCamera();
+        }
+        if (other.gameObject.CompareTag("Pickup"))
+        {
+            Score += 100;
             hitSound.Play();
             ShakeCamera();
         }
